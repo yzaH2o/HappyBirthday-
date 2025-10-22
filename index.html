@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <h1>Enter Access Information</h1>
+        <form id="login-form">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required><br><br>
+
+            <label for="favoriteColor">Favorite Color:</label>
+            <input type="text" id="favoriteColor" name="favoriteColor" required><br><br>
+
+            <label for="accesscode">Access Code:</label>
+            <input type="password" id="accesscode" name="accesscode" required><br><br>
+            <p id="password-hint">Hint: His favorite person's name in capital letters.</p>
+
+            <button type="submit">Enter</button>
+        </form>
+        <p id="login-error" class="error-message"></p>
+    </div>
+
+    <div class="birthday-message" style="display: none;">
+        <h1>Happy Birthday!</h1>
+        <p id="user-greeting">Dear <span id="display-username"></span>,</p>
+        <p id="birthday-message-content"></p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
