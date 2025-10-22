@@ -1,0 +1,63 @@
+from flask import Flask, request, jsonify
+import os
+import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
+
+app = Flask(__name__)
+
+DATABASE = 'user_data.db'
+
+def get_db_connection():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def create_table():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            favorite_color TEXT,
+            access_code TEXT,
+            ip_address TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+create_table()
+
+@app.route('/api/submit', methods=['POST'])
+def submit_data():
+    data = request.get_json()
+    username = data['username']
+    favorite_color = data['favoriteColor']
+    access_code = data['accesscode']
+    ip_address = request.remote_addr
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Fetch the hashed access code from the database
+    cursor.execute("SELECT access_code FROM users WHERE username = ?", (username,))
+    result = cursor.fetchone()
+
+    if result is None:
+        # No user found with that username
+        return jsonify({'error': 'Invalid username or access code.'}), 401
+
+    hashed_access_code = result['access_code']
+
+    # Verify the access code
+    if check_password_hash(hashed_access_code, access_code):
+        # Access code is correct
+        print(f"Data inserted successfully for username: {username}, IP: {ip_address}")
+        return jsonify({'message': 'Data received and stored successfully!'}), 200
+    else:
+        # Access code is incorrect
+        return jsonify({'error': 'Invalid username or access code.'}), 401
+
+if __name__ == '__main__':
+    app.run(debug=True)
